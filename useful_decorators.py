@@ -35,23 +35,23 @@ def logging_wrapper(logging_conf={}, fail_exit=False, exitcode=0):
     return logging_decorator
 
 
-def timer(func):
+def time_this(func):
     @functools.wraps(func)
-    def timer_wrap(*args, **kwargs):
-        start_time = time.perf_counter() 
-        value = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        run_time = end_time - start_time
+    def timer(*args, **kwargs):
+        before = time.perf_counter() 
+        result = func(*args, **kwargs)
+        after = time.perf_counter()
+        run_time = after - before
         logging.info("Finished %s in %.4f secs", func.__name__, run_time)
-        return value
-    return timer_wrap
+        return result
+    return timer
 
 
 if __name__ == '__main__':
     @logging_wrapper()
-    @timer
+    @time_this
     def test_func(a, b=8):
-        logging.info('Inner function')
+        logging.info('Inside function %s', __name__)
         return (a, b)
 
     log_format = '%(asctime)-15s %(levelname)s\t%(funcName)s:%(lineno)d\t%(message)s'
