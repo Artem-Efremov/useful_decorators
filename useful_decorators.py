@@ -10,7 +10,7 @@ default_logging_wrapper_config = {
     'error': '%s'
 }
 
-def logging_wrapper(logging_conf={}, fail_exit=False, exitcode=0):
+def logging_wrapper(logging_conf={}, fail_exit=False, exitcode=0, exceptions=(Exception,)):
     def logging_decorator(func):
         conf = logging_conf.get(func.__name__) or default_logging_wrapper_config
         @functools.wraps(func) # invoke func.__name__ out of this decorator
@@ -23,7 +23,7 @@ def logging_wrapper(logging_conf={}, fail_exit=False, exitcode=0):
                 logging.info(conf['enter'], func.__name__)
                 logging.debug('Calling %s(%s)', func.__name__, arguments)
                 value = func(*args, **kwargs)
-            except Exception as e:
+            except exceptions as e:
                 logging.exception(conf['error'], e)
                 if fail_exit:
                     sys.exit(exitcode)
